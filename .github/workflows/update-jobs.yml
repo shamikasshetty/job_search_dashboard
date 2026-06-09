@@ -1,0 +1,37 @@
+name: Update Jobs Feed Daily
+
+on:
+  schedule:
+    - cron: '0 13 * * 1-5'  # 8am CST = 1pm UTC weekdays
+  workflow_dispatch:         # allows manual trigger
+
+jobs:
+  update-jobs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run process_jobs.py
+        env:
+          APIFY_API_TOKEN: ${{ secrets.APIFY_API_TOKEN }}
+          APIFY_ACTOR_ID: ${{ secrets.APIFY_ACTOR_ID }}
+        run: python process_jobs.py
+
+      - name: Commit and push updated files
+        run: |
+          git config user.name "Job Bot"
+          git config user.email "bot@jobdash.com"
+          git add index.html jobs.json
+          git diff --staged --quiet || git commit -m "Auto-update jobs — $(date +'%Y-%m-%d %H:%M CST')"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
