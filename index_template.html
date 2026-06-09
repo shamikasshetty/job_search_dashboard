@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shamika.jobs Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0d0d14;color:#e8e8f4;min-height:100vh}
+nav{background:#13131f;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:100;height:52px;gap:2px}
+.logo{font-size:15px;font-weight:700;margin-right:20px}.logo span{color:#7B6EF6}
+.ntab{height:52px;padding:0 16px;font-size:13px;color:#9090b8;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.ntab:hover{color:#e8e8f4}.ntab.active{color:#7B6EF6;border-bottom-color:#7B6EF6;font-weight:500}
+.nbadge{background:#7B6EF6;color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;font-weight:600}
+.nsync{margin-left:auto;font-size:11px;color:#55556a}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#34D399;box-shadow:0 0 5px #34D399;margin-right:5px;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.panel{display:none;padding:20px 24px}.panel.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px}
+.sc{background:#13131f;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc.c1::before{background:#7B6EF6}.sc.c2::before{background:#34D399}.sc.c3::before{background:#2DD4BF}.sc.c4::before{background:#FBBF24}.sc.c5::before{background:#F87171}
+.sc:hover{border-color:rgba(255,255,255,0.13)}.sc.on{border-color:#7B6EF6;background:rgba(123,110,246,0.08)}
+.snum{font-size:26px;font-weight:700}.slbl{font-size:11px;color:#9090b8;margin-top:4px}.shint{font-size:9px;color:#55556a;margin-top:2px}
+.fbar{background:#13131f;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px 18px;margin-bottom:18px}
+.frow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.frow+.frow{margin-top:10px}
+.sbox{position:relative;flex:1;min-width:200px}
+.sbox input{width:100%;padding:8px 12px 8px 34px;background:#181828;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e8e8f4;font-size:13px;outline:none}
+.sbox input:focus{border-color:#7B6EF6}
+.sico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#55556a}
+select.fs{background:#181828;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#9090b8;font-size:12px;padding:8px 10px;outline:none;cursor:pointer}
+select.fs:focus{border-color:#7B6EF6}
+.chip{padding:5px 12px;border-radius:20px;font-size:11px;cursor:pointer;border:1px solid rgba(255,255,255,0.12);background:#181828;color:#9090b8;transition:all .15s;user-select:none}
+.chip:hover{border-color:#7B6EF6;color:#e8e8f4}.chip.on{background:rgba(123,110,246,0.18);border-color:#7B6EF6;color:#7B6EF6}
+.rbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.rcnt{font-size:13px;color:#9090b8}.rcnt b{color:#e8e8f4}
+.clrbtn{font-size:12px;color:#7B6EF6;background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px}
+.jgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.jcard{background:#13131f;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:15px;transition:all .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+.jcard:hover{border-color:rgba(255,255,255,0.13);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.jacc{position:absolute;top:0;left:0;right:0;height:3px}
+.jtop{display:flex;gap:10px;align-items:flex-start}
+.jico{width:38px;height:38px;border-radius:9px;background:#181828;border:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#7B6EF6;flex-shrink:0}
+.ji{flex:1;min-width:0}.jt{font-size:14px;font-weight:600;line-height:1.3}.jco{font-size:12px;color:#9090b8}
+.jsc{text-align:right;flex-shrink:0}.jscn{font-size:19px;font-weight:700;line-height:1}.jscl{font-size:9px;color:#55556a}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-size:10px;padding:2px 8px;border-radius:20px}
+.tl{background:#181828;color:#9090b8}.tr{background:rgba(45,212,191,.1);color:#2DD4BF}
+.ts{background:rgba(251,191,36,.1);color:#FBBF24}.th{background:rgba(52,211,153,.1);color:#34D399;font-weight:600}
+.tc{background:rgba(241,113,113,.1);color:#F87171;font-weight:600}.tsrc{background:#1e1e32;color:#55556a}
+.jbar{height:3px;background:#1e1e32;border-radius:2px}
+.jbf{height:3px;border-radius:2px}
+.sks{display:flex;gap:4px;flex-wrap:wrap}
+.sk{font-size:10px;padding:2px 7px;border-radius:4px;background:#1e1e32;color:#55556a}
+.sk.m{background:rgba(45,212,191,.1);color:#2DD4BF;border:1px solid rgba(45,212,191,.2)}
+.acts{display:flex;gap:7px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,0.12);background:#181828;color:#e8e8f4;transition:all .15s;text-decoration:none}
+.btn:hover{border-color:#7B6EF6;color:#7B6EF6}
+.btnp{background:#7B6EF6;border-color:#7B6EF6;color:#fff;flex:1;justify-content:center}
+.btnp:hover{background:#6a5de0;color:#fff}
+.btnt{background:rgba(45,212,191,.1);border-color:rgba(45,212,191,.25);color:#2DD4BF}
+.btnsm{padding:5px 10px;font-size:11px}
+.jago{font-size:10px;color:#55556a}
+.empty{text-align:center;padding:50px;color:#55556a}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:999;align-items:center;justify-content:center;padding:16px}
+.mbg.show{display:flex}
+.modal{background:#13131f;border:1px solid rgba(255,255,255,0.12);border-radius:18px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
+.mhdr{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;justify-content:space-between;align-items:center}
+.mtitle{font-size:15px;font-weight:600}.mclose{background:none;border:none;color:#9090b8;font-size:22px;cursor:pointer}
+.mbdy{padding:18px 22px}.mft{padding:14px 22px;border-top:1px solid rgba(255,255,255,0.07);display:flex;gap:10px}
+.ib{background:#181828;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.ibl{font-size:10px;color:#55556a;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;font-weight:500}
+.ir{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.ir:last-child{border:none}.ir span:first-child{color:#9090b8}.ir span:last-child{color:#e8e8f4;font-weight:500}
+.jhi{background:rgba(123,110,246,.08);border:1px solid rgba(123,110,246,.2);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.ttabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:14px}
+.ttab{padding:8px 14px;font-size:12px;color:#9090b8;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.ttab.active{color:#7B6EF6;border-bottom-color:#7B6EF6;font-weight:500}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:10px;color:#55556a;letter-spacing:.07em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.tbl td{padding:11px 10px;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.07);vertical-align:middle}
+.sbadge{display:inline-block;font-size:10px;padding:3px 8px;border-radius:20px;font-weight:500;cursor:pointer}
+.st-new{background:rgba(123,110,246,.2);color:#7B6EF6}.st-applied{background:rgba(45,212,191,.2);color:#2DD4BF}
+.st-interview{background:rgba(251,191,36,.2);color:#FBBF24}.st-offered{background:rgba(52,211,153,.2);color:#34D399}.st-rejected{background:rgba(241,113,113,.2);color:#F87171}
+.og{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ocard{background:#13131f;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;margin-bottom:12px}
+.octitle{font-size:13px;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.fg{margin-bottom:10px}.fl{font-size:10px;color:#55556a;letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:4px}
+input.fi,select.fi,textarea.fi{width:100%;background:#181828;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e8e8f4;font-size:12px;padding:7px 10px;outline:none;font-family:inherit}
+input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:#7B6EF6}
+textarea.fi{resize:vertical;min-height:80px}
+.mo{background:#181828;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:12px;font-size:12px;color:#e8e8f4;line-height:1.7;min-height:110px;white-space:pre-wrap}
+.tplbtn{background:none;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:7px 12px;text-align:left;cursor:pointer;font-size:12px;color:#9090b8;display:block;width:100%;margin-bottom:6px;transition:all .13s}
+.tplbtn:hover{border-color:#7B6EF6;color:#e8e8f4;background:rgba(123,110,246,.08)}
+.tc2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{position:fixed;bottom:20px;right:20px;background:#13131f;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 16px;font-size:13px;z-index:9999;transform:translateY(60px);opacity:0;transition:all .25s;max-width:280px}
+.toast.show{transform:translateY(0);opacity:1}.toast.ok{border-color:rgba(52,211,153,.4)}.toast.err{border-color:rgba(241,113,113,.4)}
+.stitle{font-size:16px;font-weight:700;margin-bottom:18px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="mbg" id="amodal">
+  <div class="modal">
+    <div class="mhdr"><div class="mtitle" id="mTitle">Apply</div><button class="mclose" onclick="closeM()">&#x2715;</button></div>
+    <div class="mbdy">
+      <div class="jhi" id="mJob"></div>
+      <div class="ib">
+        <div class="ibl">Your info — copied to clipboard</div>
+        <div class="ir"><span>Name</span><span>Shamika Shetty</span></div>
+        <div class="ir"><span>Email</span><span>shettyshamika1209@gmail.com</span></div>
+        <div class="ir"><span>Phone</span><span>+1 (469) 793-9642</span></div>
+        <div class="ir"><span>Location</span><span>Austin, TX</span></div>
+        <div class="ir"><span>Auth</span><span>H4-EAD — no sponsorship needed</span></div>
+        <div class="ir"><span>LinkedIn</span><span>bit.ly/ShamikaLinkedin</span></div>
+        <div class="ir"><span>Resume</span><span id="mRes">Security</span></div>
+      </div>
+      <div class="ib"><div class="ibl">Eligibility</div><div id="mFlags" style="display:flex;gap:10px;flex-wrap:wrap"></div></div>
+    </div>
+    <div class="mft">
+      <button class="btn btnp" onclick="doApply()" style="flex:1;justify-content:center">&#x1F680; Open application page</button>
+      <button class="btn" onclick="closeM()">Cancel</button>
+    </div>
+  </div>
+</div>
+<nav>
+  <div class="logo">Shamika<span>.jobs</span></div>
+  <button class="ntab active" id="tab-jobs" onclick="go('jobs','tab-jobs')">&#x1F50D; Job Feed <span class="nbadge" id="nb-jobs">0</span></button>
+  <button class="ntab" id="tab-tracker" onclick="go('tracker','tab-tracker')">&#x1F4CB; Applications <span class="nbadge" id="nb-apps">0</span></button>
+  <button class="ntab" id="tab-analytics" onclick="go('analytics','tab-analytics')">&#x1F4CA; Analytics</button>
+  <button class="ntab" id="tab-outreach" onclick="go('outreach','tab-outreach')">&#x2709; Outreach</button>
+  <button class="ntab" id="tab-resume" onclick="go('resume','tab-resume')">&#x1F4C4; Resume Tailor</button>
+  <div class="nsync"><span class="dot"></span><span id="syncLbl">Loading...</span></div>
+</nav>
+<div id="panel-jobs" class="panel active">
+  <div class="stats">
+    <div class="sc c1" onclick="sf('all')" id="sf-all"><div class="snum" id="s-total">0</div><div class="slbl">Total jobs</div><div class="shint">Click: all</div></div>
+    <div class="sc c2" onclick="sf('h4')" id="sf-h4"><div class="snum" id="s-h4">0</div><div class="slbl">H4-EAD ok</div><div class="shint">Click: filter</div></div>
+    <div class="sc c3" onclick="sf('remote')" id="sf-remote"><div class="snum" id="s-remote">0</div><div class="slbl">Remote</div><div class="shint">Click: filter</div></div>
+    <div class="sc c4" onclick="sf('high')" id="sf-high"><div class="snum" id="s-high">0</div><div class="slbl">High match 80+</div><div class="shint">Click: filter</div></div>
+    <div class="sc c5" onclick="sf('sal')" id="sf-sal"><div class="snum" id="s-sal">0</div><div class="slbl">Has salary</div><div class="shint">Click: filter</div></div>
+  </div>
+  <div class="fbar">
+    <div class="frow">
+      <div class="sbox"><span class="sico">&#x1F50D;</span><input type="text" id="q" placeholder="Search title, company, skill, location..." oninput="render()"></div>
+      <select class="fs" id="fRole" onchange="render()"><option value="">All roles</option><option value="soc">SOC Analyst</option><option value="grc">GRC / Compliance</option><option value="iam">IAM / Identity</option><option value="security">Security Analyst</option><option value="data">Data Analyst</option></select>
+      <select class="fs" id="fMin" onchange="render()"><option value="0">Any score</option><option value="60">60+ Good</option><option value="70">70+ Strong</option><option value="80">80+ High</option><option value="90">90+ Top</option></select>
+      <select class="fs" id="fSort" onchange="render()"><option value="score">Best match</option><option value="date">Newest</option><option value="az">Company A-Z</option></select>
+    </div>
+    <div class="frow" style="gap:6px">
+      <span style="font-size:11px;color:#55556a">Quick:</span>
+      <span class="chip" id="ch-remote" onclick="tc('remote')">&#x1F3E0; Remote</span>
+      <span class="chip" id="ch-h4" onclick="tc('h4')">&#x2713; H4-EAD</span>
+      <span class="chip" id="ch-noclr" onclick="tc('noclr')">&#x1F513; No clearance</span>
+      <span class="chip" id="ch-sal" onclick="tc('sal')">&#x1F4B0; Has salary</span>
+      <span class="chip" id="ch-austin" onclick="tc('austin')">&#x1F4CD; Austin TX</span>
+      <span class="chip" id="ch-soc" onclick="tc('soc')">SOC</span>
+      <span class="chip" id="ch-grc" onclick="tc('grc')">GRC</span>
+      <span class="chip" id="ch-iam" onclick="tc('iam')">IAM</span>
+      <span class="chip" id="ch-data" onclick="tc('data')">Data</span>
+    </div>
+  </div>
+  <div class="rbar"><div class="rcnt"><b id="rcount">0</b> jobs shown</div><button class="clrbtn" onclick="clearF()">&#x2715; Clear filters</button></div>
+  <div id="jgrid" class="jgrid"></div>
+</div>
+<div id="panel-tracker" class="panel">
+  <div class="stitle">Application Tracker</div>
+  <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+    <button class="btn btnsm btnp" onclick="addM()">+ Add manually</button>
+    <span style="font-size:11px;color:#55556a">Click status badge to advance</span>
+  </div>
+  <div class="ttabs">
+    <button class="ttab active" onclick="fT('all',this)">All</button>
+    <button class="ttab" onclick="fT('new',this)">New</button>
+    <button class="ttab" onclick="fT('applied',this)">Applied</button>
+    <button class="ttab" onclick="fT('interview',this)">Interview &#x1F389;</button>
+    <button class="ttab" onclick="fT('offered',this)">Offered &#x1F3C6;</button>
+    <button class="ttab" onclick="fT('rejected',this)">Rejected</button>
+  </div>
+  <table class="tbl"><thead><tr><th>Role &amp; Company</th><th>Location</th><th>Salary</th><th>Score</th><th>Status</th><th>Applied</th><th>H4</th><th></th></tr></thead><tbody id="tbody"></tbody></table>
+</div>
+<div id="panel-analytics" class="panel">
+  <div class="stitle">&#x1F4CA; My Job Search Analytics</div>
+  <p style="font-size:12px;color:#55556a;margin-bottom:18px">Your real activity — applications, pipeline, networking. Updates as you track jobs.</p>
+
+  <!-- STAT CARDS -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+    <div class="sc c1"><div class="snum" id="an-total">0</div><div class="slbl">Applications sent</div></div>
+    <div class="sc c2"><div class="snum" id="an-net">0</div><div class="slbl">People networked</div></div>
+    <div class="sc c3"><div class="snum" id="an-int">0</div><div class="slbl">Interviews</div></div>
+    <div class="sc c4"><div class="snum" id="an-offered">0</div><div class="slbl">Offers received</div></div>
+  </div>
+
+  <!-- PIPELINE + WEEK -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="ocard">
+      <div class="octitle">Application Pipeline</div>
+      <div id="pipeline">
+        <div style="font-size:12px;color:#55556a;text-align:center;padding:20px">No applications yet</div>
+      </div>
+    </div>
+    <div class="ocard">
+      <div class="octitle">This Week</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:4px" id="weekGrid"></div>
+      <div style="font-size:11px;color:#55556a;margin-top:10px;text-align:center" id="weekTotal"></div>
+    </div>
+    <div class="ocard">
+      <div class="octitle">Top Companies Applied</div>
+      <div id="topCos"><div style="font-size:12px;color:#55556a;text-align:center;padding:20px">No applications yet</div></div>
+    </div>
+  </div>
+
+  <!-- GMAIL SYNC -->
+  <div class="ocard" style="margin-bottom:14px">
+    <div class="octitle">&#x1F4E7; Gmail Status Sync
+      <button class="btn btnt btnsm" onclick="syncGmail()">&#x1F504; Sync from Gmail</button>
+    </div>
+    <p style="font-size:12px;color:#55556a;margin-bottom:10px">Scans your inbox for application confirmations, interview requests, and rejection emails — updates your tracker automatically.</p>
+    <div id="gmailStatus" style="font-size:12px;color:#55556a">Click Sync to check your Gmail for application updates.</div>
+    <div style="margin-top:10px;background:#1e1e32;border-radius:8px;padding:10px 12px;font-size:11px;color:#55556a;line-height:1.6">
+      &#x26A0;&#xFE0F; Gmail sync works when you use this dashboard inside <b style="color:#e8e8f4">Claude.ai</b> with Gmail connected in Settings. 
+      It reads emails from the last 30 days and looks for: thank you for applying, interview invitation, application status update, offer letter.
+    </div>
+  </div>
+
+  <!-- MANUAL LOG -->
+  <div class="ocard" style="margin-bottom:14px">
+    <div class="octitle">&#x270F; Log Activity Manually</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+      <div><div class="fl">Activity type</div>
+        <select class="fi" id="log-type">
+          <option value="network">LinkedIn message sent</option>
+          <option value="resume">Resume tailored + submitted</option>
+          <option value="followup">Application follow-up sent</option>
+          <option value="interview">Interview scheduled</option>
+          <option value="offer">Offer received</option>
+          <option value="rejected">Application rejected</option>
+        </select>
+      </div>
+      <div><div class="fl">Company</div><input class="fi" type="text" id="log-co" placeholder="Company name"></div>
+      <div><div class="fl">Notes (optional)</div><input class="fi" type="text" id="log-note" placeholder="Any notes..."></div>
+    </div>
+    <button class="btn btnsm btnp" onclick="logAct()">+ Log this activity</button>
+  </div>
+
+  <!-- ACTIVITY LOG -->
+  <div class="ocard">
+    <div class="octitle">Recent Activity Log</div>
+    <div id="activityLog"><div style="font-size:12px;color:#55556a;text-align:center;padding:20px">No activity logged yet. Use the form above or apply to jobs.</div></div>
+  </div>
+</div>
+
+<div id="panel-outreach" class="panel">
+  <div class="stitle">&#x2709; LinkedIn Outreach Writer</div>
+
+  <div style="background:#13131f;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px 18px;margin-bottom:20px">
+    <div style="font-size:13px;font-weight:600;margin-bottom:4px">&#x1F50E; Find people at a company</div>
+    <p style="font-size:12px;color:#55556a;margin-bottom:12px">Enter company you applied to &#x2192; click button &#x2192; LinkedIn opens with results &#x2192; note their name &#x2192; generate message below</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:10px;color:#55556a;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px">Company applied to</div>
+        <input type="text" id="li-company" placeholder="e.g. Verizon, Benepass..." style="width:100%;background:#181828;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e8e8f4;font-size:12px;padding:7px 10px;outline:none">
+      </div>
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:10px;color:#55556a;letter-spacing:.07em;text-transform:uppercase;margin-bottom:4px">Role you applied for</div>
+        <input type="text" id="li-role" placeholder="e.g. SOC Analyst..." style="width:100%;background:#181828;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e8e8f4;font-size:12px;padding:7px 10px;outline:none">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btnsm" style="background:rgba(0,119,181,0.15);border-color:rgba(0,119,181,0.4);color:#0077b5" onclick="liSearch('recruiter')">&#x1F4E3; Find Recruiters</button>
+      <button class="btn btnsm" style="background:rgba(0,119,181,0.15);border-color:rgba(0,119,181,0.4);color:#0077b5" onclick="liSearch('hiring')">&#x1F454; Find Hiring Managers</button>
+      <button class="btn btnsm" style="background:rgba(0,119,181,0.15);border-color:rgba(0,119,181,0.4);color:#0077b5" onclick="liSearch('peer')">&#x1F91D; Find Peers</button>
+      <button class="btn btnsm" style="background:rgba(0,119,181,0.15);border-color:rgba(0,119,181,0.4);color:#0077b5" onclick="liSearch('all')">&#x1F465; Find All Three</button>
+    </div>
+    <div id="li-tip" style="display:none;margin-top:10px;background:#1e1e32;padding:10px 12px;border-radius:8px;font-size:11px;color:#9090b8;line-height:1.6"></div>
+  </div>
+
+  <div class="og">
+    <div>
+      <div class="ocard"><div class="octitle">Generate message</div>
+        <div class="tc2"><div class="fg"><label class="fl">Their name</label><input class="fi" type="text" id="on" placeholder="Sarah Johnson"></div><div class="fg"><label class="fl">Their role</label><input class="fi" type="text" id="orole" placeholder="Recruiter"></div></div>
+        <div class="tc2"><div class="fg"><label class="fl">Company</label><input class="fi" type="text" id="oco" placeholder="Palo Alto Networks"></div><div class="fg"><label class="fl">Type</label><select class="fi" id="ot"><option value="recruiter">Cold recruiter</option><option value="peer">Peer networking</option><option value="mentor">Mentor request</option><option value="hiring">Hiring manager</option><option value="followup">Follow-up</option></select></div></div>
+        <div class="fg"><label class="fl">Role applied for</label><input class="fi" type="text" id="oj" placeholder="SOC Analyst I"></div>
+        <button class="btn btnp" style="width:100%;justify-content:center" onclick="genMsg()">&#x2728; Generate</button>
+      </div>
+      <div class="ocard"><div class="octitle">Quick templates</div>
+        <button class="tplbtn" onclick="lt('recruiter')">&#x1F4E3; Cold recruiter</button>
+        <button class="tplbtn" onclick="lt('peer')">&#x1F91D; Peer networking</button>
+        <button class="tplbtn" onclick="lt('mentor')">&#x1F393; Find a mentor</button>
+        <button class="tplbtn" onclick="lt('followup')">&#x1F504; Post-application follow-up</button>
+      </div>
+    </div>
+    <div>
+      <div class="ocard"><div class="octitle">Your message <button class="btn btnt btnsm" onclick="copyMsg()">&#x1F4CB; Copy</button></div>
+        <div class="mo" id="msgOut">Your message will appear here...</div>
+        <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btnsm" onclick="genMsg()">&#x21BA; Regenerate</button><button class="btn btnt btnsm" onclick="logMsg()">&#x2705; Log sent</button></div>
+      </div>
+      <div class="ocard"><div class="octitle">Outreach log <span style="font-size:11px;color:#55556a;font-weight:400" id="ologn"></span></div><div id="olog"><div style="font-size:12px;color:#55556a">No outreach yet.</div></div></div>
+    </div>
+  </div>
+</div>
+<div id="panel-resume" class="panel">
+  <div class="stitle">&#x1F4C4; Resume Help — Free (No API needed)</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div>
+      <div class="ocard">
+        <div class="octitle">&#x2728; How to tailor your resume free</div>
+        <div style="font-size:12px;color:#9090b8;line-height:1.9">
+          <div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)">1. Find a job in <b style="color:#e8e8f4">Job Feed</b> tab</div>
+          <div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)">2. Copy the job description</div>
+          <div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)">3. Click <b style="color:#7B6EF6">Open Claude chat</b> below</div>
+          <div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)">4. Click <b style="color:#7B6EF6">Copy prompt</b> &rarr; paste into Claude</div>
+          <div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)">5. Replace [PASTE JD HERE] with the JD</div>
+          <div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)">6. Claude rewrites your resume in 30 sec</div>
+          <div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.07)">7. Copy &rarr; paste into Google Docs</div>
+          <div style="padding:5px 0">8. File &rarr; Download &rarr; PDF &rarr; attach &#x2705;</div>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:8px;font-size:11px;color:#9090b8">
+          &#x1F4B0; <b style="color:#34D399">Cost: $0</b> &mdash; included in Claude Pro &nbsp;|&nbsp; &#x26A1; <b style="color:#34D399">30 seconds</b> per resume
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btnt btnsm" onclick="copyPrompt()">&#x1F4CB; Copy prompt</button>
+          <a href="https://claude.ai" target="_blank" class="btn btnsm" style="background:rgba(123,110,246,0.15);border-color:rgba(123,110,246,0.3);color:#7B6EF6">&#x1F310; Open Claude chat</a>
+        </div>
+      </div>
+      <div class="ocard">
+        <div class="octitle">&#x1F4CA; Free ATS score checkers</div>
+        <div style="font-size:12px;color:#9090b8;line-height:1.9">
+          <div><a href="https://www.jobscan.co" target="_blank" style="color:#7B6EF6">jobscan.co</a> &mdash; 5 free scans/month</div>
+          <div><a href="https://resumeworded.com" target="_blank" style="color:#7B6EF6">resumeworded.com</a> &mdash; free ATS score</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="ocard">
+        <div class="octitle">&#x1F4CB; Copy this prompt &rarr; paste into Claude chat</div>
+        <div id="resumePrompt" style="background:#1e1e32;border-radius:8px;padding:14px;font-size:11px;color:#9090b8;line-height:1.7;white-space:pre-wrap;font-family:monospace;margin-bottom:10px">Tailor my resume for this job. Use exact keywords from the JD. Rewrite the summary to match this specific role. Keep all facts truthful. Return the complete tailored resume.
+
+My background: 10 years experience, Security+, ISC2 CC, Splunk, Wireshark, Active Directory, NIST 800-53, ISO 27001, GRC control mapping, access reviews, RBAC, SOC log analysis, incident response, SQL, Python, Power BI, Tableau, Austin TX, H4-EAD.
+
+Job description:
+[PASTE JD HERE]</div>
+        <button class="btn btnt btnsm" onclick="copyPrompt()">&#x1F4CB; Copy prompt</button>
+      </div>
+      <div class="ocard">
+        <div class="octitle">&#x1F4DD; Which resume to use</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:#1e1e32;border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:12px;font-weight:600;color:#e8e8f4">Security Analyst Resume</div><div style="font-size:11px;color:#55556a">SOC, GRC, IAM, Security, Cyber roles</div></div>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(52,211,153,0.15);color:#34D399">90% of roles</span>
+          </div>
+          <div style="background:#1e1e32;border-radius:8px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:12px;font-weight:600;color:#e8e8f4">Data Analyst Resume</div><div style="font-size:11px;color:#55556a">Data Analyst, Analytics, BI roles</div></div>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(123,110,246,0.15);color:#7B6EF6">Data roles</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+
+var JOBS=/*JOBS_PLACEHOLDER*/;
+
+var apps=JSON.parse(localStorage.getItem('apps')||'[]');
+var actLog=JSON.parse(localStorage.getItem('actLog')||'[]');
+var oLog=JSON.parse(localStorage.getItem('oLog')||'[]');
+var chips={},statF='all',tF='all',curJ=null;
+var MY=['sql','python','splunk','nist','grc','iam','soc','power bi','security+','active directory','wireshark','rbac','iso 27001','log analysis','incident response','siem','tableau','excel','pandas','mitre','risk assessment','access review','threat hunting','compliance','vulnerability'];
+var rtText='';
+
+window.onload=function(){
+  document.getElementById('syncLbl').textContent=JOBS.length+' jobs · JOBS_DATE_PLACEHOLDER loaded · Jun 6 2026';
+  updateStats();
+  render();
+  renderTracker();
+  renderOLog();
+  document.getElementById('nb-jobs').textContent=JOBS.filter(function(j){return j.status==='new';}).length;
+  document.getElementById('nb-apps').textContent=apps.length;
+  var k=localStorage.getItem('ak');
+  if(k && document.getElementById('rt-key'))document.getElementById('rt-key').value=k;
+};
+
+function go(panel,tabId){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('panel-'+panel).classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+  if(panel==='analytics'){buildAnalytics();}
+}
+function updateStats(){
+  document.getElementById('s-total').textContent=JOBS.length;
+  document.getElementById('s-h4').textContent=JOBS.filter(function(j){return j.h4;}).length;
+  document.getElementById('s-remote').textContent=JOBS.filter(function(j){return j.remote;}).length;
+  document.getElementById('s-high').textContent=JOBS.filter(function(j){return j.score>=80;}).length;
+  document.getElementById('s-sal').textContent=JOBS.filter(function(j){return j.sal;}).length;
+}
+
+function sf(type){
+  statF=statF===type?'all':type;
+  document.querySelectorAll('.sc').forEach(function(c){c.classList.remove('on');});
+  if(statF!=='all')document.getElementById('sf-'+type).classList.add('on');
+  render();
+}
+
+function tc(name){
+  chips[name]=!chips[name];
+  document.getElementById('ch-'+name).classList.toggle('on',!!chips[name]);
+  render();
+}
+
+function clearF(){
+  document.getElementById('q').value='';
+  document.getElementById('fRole').value='';
+  document.getElementById('fMin').value='0';
+  document.getElementById('fSort').value='score';
+  chips={};statF='all';
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on');});
+  document.querySelectorAll('.sc').forEach(function(c){c.classList.remove('on');});
+  render();
+}
+
+function render(){
+  var q=(document.getElementById('q').value||'').toLowerCase();
+  var fR=document.getElementById('fRole').value;
+  var fM=parseInt(document.getElementById('fMin').value)||0;
+  var fS=document.getElementById('fSort').value;
+  var list=JOBS.filter(function(j){
+    var t=j.title.toLowerCase(),l=(j.location||'').toLowerCase();
+    if(q&&t.indexOf(q)<0&&j.company.toLowerCase().indexOf(q)<0&&l.indexOf(q)<0)return false;
+    if(fR){
+      if(fR==='soc'&&t.indexOf('soc')<0&&t.indexOf('security ops')<0)return false;
+      if(fR==='grc'&&t.indexOf('grc')<0&&t.indexOf('compliance')<0&&t.indexOf('risk')<0)return false;
+      if(fR==='iam'&&t.indexOf('iam')<0&&t.indexOf('identity')<0)return false;
+      if(fR==='security'&&t.indexOf('security')<0&&t.indexOf('cyber')<0)return false;
+      if(fR==='data'&&t.indexOf('data analyst')<0)return false;
+    }
+    if(j.score<fM)return false;
+    if(chips.remote&&!j.remote)return false;
+    if(chips.h4&&!j.h4)return false;
+    if(chips.noclr&&(j.clr||j.cit))return false;
+    if(chips.sal&&!j.sal)return false;
+    if(chips.austin&&l.indexOf('austin')<0)return false;
+    if(chips.soc&&t.indexOf('soc')<0)return false;
+    if(chips.grc&&t.indexOf('grc')<0&&t.indexOf('compliance')<0)return false;
+    if(chips.iam&&t.indexOf('iam')<0&&t.indexOf('identity')<0)return false;
+    if(chips.data&&t.indexOf('data')<0)return false;
+    if(statF==='h4'&&!j.h4)return false;
+    if(statF==='remote'&&!j.remote)return false;
+    if(statF==='high'&&j.score<80)return false;
+    if(statF==='sal'&&!j.sal)return false;
+    return true;
+  });
+  if(fS==='date')list.sort(function(a,b){return new Date(b.posted)-new Date(a.posted);});
+  else if(fS==='az')list.sort(function(a,b){return a.company.localeCompare(b.company);});
+  else list.sort(function(a,b){return b.score-a.score;});
+  document.getElementById('rcount').textContent=list.length;
+  var el=document.getElementById('jgrid');
+  if(!list.length){el.innerHTML='<div class="empty"><p>No jobs match filters.</p><br><button class="btn btnsm" onclick="clearF()" style="margin:0 auto">Clear filters</button></div>';return;}
+  el.innerHTML=list.map(function(j){
+    var sc=j.score>=80?'#34D399':j.score>=60?'#FBBF24':'#F87171';
+    var h=Math.floor((Date.now()-new Date(j.posted))/3600000);
+    var ago=h<1?'just now':h<24?h+'h ago':Math.floor(h/24)+'d ago';
+    var skHtml=(j.skills||[]).slice(0,5).map(function(s){var m=MY.some(function(ms){return s.toLowerCase().indexOf(ms)>-1;});return '<span class="sk'+(m?' m':'')+'">'+s+'</span>';}).join('');
+    var app=apps.find(function(a){return a.jid===j.id;});
+    return '<div class="jcard">'
+      +'<div class="jacc" style="background:'+sc+'"></div>'
+      +'<div class="jtop">'
+      +'<div class="jico">'+j.company.substring(0,2).toUpperCase()+'</div>'
+      +'<div class="ji"><div class="jt">'+j.title+'</div><div class="jco">'+j.company+'</div></div>'
+      +'<div class="jsc"><div class="jscn" style="color:'+sc+'">'+j.score+'</div><div class="jscl">MATCH</div></div>'
+      +'</div>'
+      +'<div class="tags">'
+      +'<span class="tag tl">'+j.location+'</span>'
+      +(j.remote?'<span class="tag tr">Remote</span>':'')
+      +(j.sal?'<span class="tag ts">'+j.sal+'</span>':'')
+      +(j.h4?'<span class="tag th">&#x2713; H4-EAD</span>':'')
+      +(j.clr?'<span class="tag tc">&#x1F512; '+(j.clrt||'Clearance')+'</span>':'')
+      +(j.cit?'<span class="tag tc">&#x1F1FA;&#x1F1F8; US Citizen</span>':'')
+      +'<span class="tag tsrc">'+j.source+'</span>'
+      +'</div>'
+      +'<div class="jbar"><div class="jbf" style="width:'+j.score+'%;background:'+sc+'"></div></div>'
+      +(skHtml?'<div class="sks">'+skHtml+'</div>':'')
+      +'<div class="acts">'
+      +'<button class="btn btnp" onclick="openApply(\''+j.id+'\')">&#x1F680; Apply</button>'
+      +'<button class="btn btnt btnsm" onclick="addTrack(\''+j.id+'\')">&#x1F4CB; Track</button>'
+      +'<button class="btn btnsm" onclick="doOut(\''+j.id+'\')">&#x2709; Outreach</button>'
+      +'</div>'
+      +'<div class="jago">'+ago+(app?' &middot; <span style="color:#2DD4BF">'+app.status+'</span>':' &middot; not applied')+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function openApply(id){
+  var j=JOBS.find(function(x){return x.id===id;});if(!j)return;
+  curJ=j;
+  document.getElementById('mTitle').textContent=j.title+' at '+j.company;
+  document.getElementById('mRes').textContent=j.rv==='data'?'Data Analyst Resume':'Security Analyst Resume';
+  document.getElementById('mJob').innerHTML='<div style="font-size:13px;font-weight:600;margin-bottom:3px">'+j.title+'</div><div style="font-size:12px;color:#9090b8">'+j.company+' &middot; '+j.location+'</div>'+(j.sal?'<div style="font-size:12px;color:#FBBF24;margin-top:3px">'+j.sal+'</div>':'');
+  document.getElementById('mFlags').innerHTML='<span style="font-size:12px;color:'+(j.h4?'#34D399':'#F87171')+'">'+(j.h4?'&#x2705;':'&#x274C;')+' H4-EAD</span><span style="font-size:12px;color:'+(!j.clr?'#34D399':'#F87171')+'">'+(!j.clr?'&#x2705;':'&#x274C;')+' No clearance</span><span style="font-size:12px;color:'+(!j.cit?'#34D399':'#F87171')+'">'+(!j.cit?'&#x2705;':'&#x274C;')+' No citizenship req</span>';
+  try{navigator.clipboard.writeText('Shamika Shetty\nshettyshamika1209@gmail.com\n+1 (469) 793-9642\nAustin, TX\nH4-EAD no sponsorship needed\nhttps://bit.ly/ShamikaLinkedin\nhttps://bit.ly/ShamikaPortfolio');}catch(e){}
+  document.getElementById('amodal').classList.add('show');
+}
+function doApply(){if(!curJ)return;window.open(curJ.url,'_blank');addTrack(curJ.id,'applied');closeM();toast('Application opened &middot; info copied','ok');}
+function closeM(){document.getElementById('amodal').classList.remove('show');curJ=null;}
+document.getElementById('amodal').addEventListener('click',function(e){if(e.target===this)closeM();});
+
+function addTrack(id,status){
+  var j=JOBS.find(function(x){return x.id===id;});if(!j)return;
+  if(apps.find(function(a){return a.jid===id;})){toast('Already tracking','err');return;}
+  apps.push({jid:id,title:j.title,company:j.company,location:j.location,salary:j.sal||'Not listed',score:j.score,h4:j.h4,status:status||'new',date:new Date().toLocaleDateString(),url:j.url});
+  localStorage.setItem('apps',JSON.stringify(apps));
+  document.getElementById('nb-apps').textContent=apps.length;
+  renderTracker();toast('Added to tracker','ok');
+}
+function renderTracker(){
+  var body=document.getElementById('tbody');
+  var list=tF==='all'?apps:apps.filter(function(a){return a.status===tF;});
+  if(!list.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#55556a">No applications yet. Click Apply or Track on any job.</td></tr>';return;}
+  var cls={new:'st-new',applied:'st-applied',interview:'st-interview',offered:'st-offered',rejected:'st-rejected'};
+  body.innerHTML=list.map(function(a,i){
+    var sc=a.score>=80?'#34D399':a.score>=60?'#FBBF24':'#F87171';
+    return '<tr><td><div style="font-weight:600">'+a.title+'</div><div style="color:#9090b8;font-size:11px">'+a.company+'</div></td>'
+      +'<td style="color:#9090b8">'+a.location+'</td><td style="color:#9090b8;font-size:11px">'+a.salary+'</td>'
+      +'<td><span style="color:'+sc+';font-weight:600">'+a.score+'%</span></td>'
+      +'<td><span class="sbadge '+(cls[a.status]||'st-new')+'" onclick="adv('+i+')" title="Click to advance">'+a.status+'</span></td>'
+      +'<td style="color:#55556a;font-size:11px">'+a.date+'</td>'
+      +'<td style="color:'+(a.h4?'#34D399':'#F87171')+'">'+( a.h4?'&#x2713;':'&#x2717;')+'</td>'
+      +'<td style="display:flex;gap:6px"><a href="'+a.url+'" target="_blank" class="btn btnsm">&#x1F517;</a><button class="btn btnsm" style="color:#F87171" onclick="delA('+i+')">&#x1F5D1;</button></td>'
+      +'</tr>';
+  }).join('');
+}
+function fT(f,btn){tF=f;document.querySelectorAll('.ttab').forEach(function(t){t.classList.remove('active');});btn.classList.add('active');renderTracker();}
+function adv(i){var c={new:'applied',applied:'interview',interview:'offered',offered:'rejected',rejected:'new'};apps[i].status=c[apps[i].status]||'new';localStorage.setItem('apps',JSON.stringify(apps));renderTracker();}
+function delA(i){apps.splice(i,1);localStorage.setItem('apps',JSON.stringify(apps));document.getElementById('nb-apps').textContent=apps.length;renderTracker();}
+function addM(){var t=prompt('Job title:');if(!t)return;var co=prompt('Company:');if(!co)return;apps.push({jid:'m'+Date.now(),title:t,company:co,location:prompt('Location:')||'TBD',salary:prompt('Salary:')||'Not listed',score:0,h4:true,status:'applied',date:new Date().toLocaleDateString(),url:prompt('Job URL:')||'#'});localStorage.setItem('apps',JSON.stringify(apps));document.getElementById('nb-apps').textContent=apps.length;renderTracker();}
+
+var tpls={
+  recruiter:function(n,r,c,j){return 'Hi '+(n||'[Name]')+',\n\nI noticed you recruit for security roles at '+(c||'[Company]')+'. I am a Data Analyst with 10 years experience transitioning into cybersecurity - Security+, ISC2 CC, Splunk, NIST 800-53.\n\nWould love to learn about any '+(j||'security')+' opportunities.\n\nHappy to send my resume!\nShamika';},
+  peer:function(n,r,c,j){return 'Hi '+(n||'[Name]')+',\n\nI saw you are a '+(r||'security professional')+' at '+(c||'[Company]')+' and would love to connect. I am transitioning from Data Analytics into cybersecurity.\n\nWould a quick 15-min chat work?\n\nThanks!\nShamika';},
+  mentor:function(n,r,c,j){return 'Hi '+(n||'[Name]')+',\n\nYour path into '+(r||'cybersecurity')+' at '+(c||'[Company]')+' is inspiring. I have Security+, ISC2 CC and Splunk experience.\n\nWould you be open to a 20-min call?\n\nThank you,\nShamika';},
+  hiring:function(n,r,c,j){return 'Hi '+(n||'[Name]')+',\n\nI came across your '+(j||'security')+' opening at '+(c||'[Company]')+' - 10 years data and security analytics, Security+, ISC2 CC, Splunk and NIST 800-53.\n\nWould love to connect.\n\nBest,\nShamika';},
+  followup:function(n,r,c,j){return 'Hi '+(n||'[Name]')+',\n\nFollowing up on my '+(j||'Security Analyst')+' application at '+(c||'[Company]')+' from last week. Still very excited about this role.\n\nThank you,\nShamika';}
+};
+function genMsg(){var n=document.getElementById('on').value,r=document.getElementById('orole').value,c=document.getElementById('oco').value,j=document.getElementById('oj').value,t=document.getElementById('ot').value;document.getElementById('msgOut').textContent=tpls[t](n,r,c,j);}
+function lt(t){document.getElementById('ot').value=t;genMsg();}
+function copyMsg(){try{navigator.clipboard.writeText(document.getElementById('msgOut').textContent).then(function(){toast('Copied!','ok');});}catch(e){toast('Select and copy manually','err');}}
+function logMsg(){var co=document.getElementById('oco').value||'Unknown';oLog.unshift({name:document.getElementById('on').value||'?',company:co,type:document.getElementById('ot').value,date:new Date().toLocaleDateString()});localStorage.setItem('oLog',JSON.stringify(oLog));renderOLog();toast('Outreach logged','ok');}
+function renderOLog(){var el=document.getElementById('olog');document.getElementById('ologn').textContent='('+oLog.length+' sent)';if(!oLog.length){el.innerHTML='<div style="font-size:12px;color:#55556a">No outreach yet.</div>';return;}el.innerHTML=oLog.slice(0,8).map(function(o){return'<div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.07)"><div><b style="color:#e8e8f4">'+o.name+'</b> <span style="color:#55556a">&middot; '+o.company+'</span></div><span style="font-size:10px;color:#55556a">'+o.date+'</span></div>';}).join('');}
+function doOut(id){var j=JOBS.find(function(x){return x.id===id;});if(j){document.getElementById('oco').value=j.company;document.getElementById('oj').value=j.title;}go('outreach','tab-outreach');genMsg();}
+
+var SEC='SHAMIKA SHETTY\nshettyshamika1209@gmail.com | +1(469) 793-9642 | bit.ly/ShamikaLinkedin\nSecurity Analyst | GRC | IAM | SOC | Austin TX | H4-EAD\n\nSUMMARY\n10 years experience in data analysis and security operations. Security+, ISC2 CC. Splunk, Wireshark, Active Directory, Nessus. NIST 800-53, ISO 27001, PCI, SOC2, MITRE ATT&CK. GRC: control mapping, access reviews, RBAC. SOC: log analysis, alert triage, incident response. SQL, Python, Power BI, Tableau.\n\nCERTIFICATIONS\nCompTIA Security+ | ISC2 CC | Azure Data Fundamentals | Google Advanced Data Analytics\n\nSKILLS\nSecurity: Splunk, Wireshark, Active Directory, Nessus, SIEM, Log Analysis, Incident Response\nFrameworks: NIST 800-53, ISO 27001, PCI, SOX, SOC2, MITRE ATT&CK\nGRC/IAM: Control Mapping, Risk Assessment, Access Reviews, RBAC\nAnalytics: SQL, Python, Power BI, Tableau, Excel, Pandas\n\nEXPERIENCE\nIndependent Security Projects | Jul 2024 - Present\n- Investigated 1000+ events in Splunk and Wireshark\n- Built Power BI dashboards tracking KPIs and access patterns\n- Mapped processes to NIST 800-53 controls\n- Conducted access reviews identifying RBAC gaps\n\nBean Infosystems | Senior Analyst | Nov 2023 - Jul 2024\n- Developed automated dashboards reducing reporting by 50%\n\nHudl | Senior Data Operations Lead | Jul 2017 - Oct 2022\n- Built Power BI and Tableau dashboards reducing backlog by 25%\n\nEDUCATION\nBachelor of Engineering | University of Mumbai | 2014';
+var DATA='SHAMIKA SHETTY\nshettyshamika1209@gmail.com | +1(469) 793-9642 | bit.ly/ShamikaLinkedin\nSenior Data Analyst | Analytics BI Security | Austin TX | H4-EAD\n\nSUMMARY\n10 years data analytics experience. SQL, Python, Power BI, Tableau, Excel, DAX, ETL. Security+, ISC2 CC. Splunk SIEM experience.\n\nSKILLS\nData: SQL, Python, Power BI, Tableau, Excel, DAX, ETL, Pandas\nSecurity: Splunk, Log Analysis, Active Directory\n\nEXPERIENCE\nIndependent Analytics | Jul 2024 - Present\n- Analyzed 20+ datasets in SQL and Python\n- Built 5 dashboards in Power BI reducing reporting by 40%\n\nBean Infosystems | Senior Analyst | Nov 2023 - Jul 2024\n- Automated reporting with Power BI and SQL\n\nHudl | Senior Data Operations Lead | Jul 2017 - Oct 2022\n- Multi-region data analysis and dashboard development\n\nEDUCATION\nBachelor of Engineering | University of Mumbai | 2014';
+
+async function tailorResume(){
+  var jd=document.getElementById('rt-jd').value.trim();
+  var key=document.getElementById('rt-key').value.trim();
+  if(!jd){toast('Paste a job description first','err');return;}
+  if(!key){toast('Enter your Anthropic API key','err');return;}
+  localStorage.setItem('ak',key);
+  var resume=document.getElementById('rt-type').value==='data'?DATA:SEC;
+  document.getElementById('rt-status').innerHTML='<div style="font-size:24px;margin-bottom:10px">&#x23F3;</div><p style="color:#9090b8">Claude is tailoring your resume...</p>';
+  document.getElementById('rt-status').style.display='block';
+  document.getElementById('rt-result').style.display='none';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-20240307',max_tokens:2000,messages:[{role:'user',content:'Tailor this resume for the job. Keep all facts truthful. Use exact keywords from the JD. Rewrite the summary to match. RESUME: '+resume+' JOB: '+jd+' Return ONLY the complete tailored resume text.'}]})});
+    var data=await res.json();
+    var text=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    if(!text){toast('API error - check your key','err');return;}
+    rtText=text;
+    document.getElementById('rt-status').style.display='none';
+    document.getElementById('rt-result').style.display='block';
+    document.getElementById('rt-text').textContent=text;
+    document.getElementById('rt-badge').innerHTML='<span style="background:rgba(52,211,153,.2);color:#34D399;font-size:11px;padding:2px 8px;border-radius:20px">ATS optimised</span>';
+    toast('Resume tailored! Copy and paste into Google Docs','ok');
+  }catch(e){document.getElementById('rt-status').innerHTML='<div style="color:#F87171;padding:20px">Failed: '+e.message+'</div>';toast('Failed - check API key','err');}
+}
+function copyResume(){if(!rtText){toast('Tailor first','err');return;}navigator.clipboard.writeText(rtText).then(function(){toast('Copied!','ok');});}
+function dlResume(){if(!rtText){toast('Tailor first','err');return;}var b=new Blob([rtText],{type:'text/plain'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='ShamikaShetty_tailored.txt';a.click();}
+function openDocs(){if(rtText)navigator.clipboard.writeText(rtText).then(function(){window.open('https://docs.new','_blank');toast('Paste with Ctrl+V in the Google Doc','ok');});else window.open('https://docs.new','_blank');}
+
+
+function liSearch(type){
+  var company=document.getElementById('li-company').value.trim();
+  var role=document.getElementById('li-role').value.trim();
+  if(!company){toast('Enter a company name first','err');return;}
+  var enc=encodeURIComponent(company);
+  var roleEnc=encodeURIComponent(role||'security analyst');
+  var urls={
+    recruiter:'https://www.linkedin.com/search/results/people/?keywords='+enc+'%20recruiter%20OR%20%22talent%20acquisition%22',
+    hiring:'https://www.linkedin.com/search/results/people/?keywords='+enc+'%20%22hiring%20manager%22%20OR%20%22security%20manager%22%20OR%20%22GRC%20manager%22',
+    peer:'https://www.linkedin.com/search/results/people/?keywords='+enc+'%20'+roleEnc
+  };
+  var tip=document.getElementById('li-tip');
+  if(tip)tip.style.display='block';
+  if(type==='all'){
+    window.open(urls.recruiter,'_blank');
+    setTimeout(function(){window.open(urls.hiring,'_blank');},500);
+    setTimeout(function(){window.open(urls.peer,'_blank');},1000);
+    if(tip)tip.innerHTML='&#x2705; Opened 3 LinkedIn searches. Find 1 person in each tab, note their name, come back and generate your message below.';
+  }else{
+    window.open(urls[type],'_blank');
+    if(tip)tip.innerHTML='&#x2705; LinkedIn search opened. Find someone, note their name, fill the form below.';
+  }
+  document.getElementById('oco').value=company;
+  if(role)document.getElementById('oj').value=role;
+  if(type==='recruiter')document.getElementById('ot').value='recruiter';
+  if(type==='hiring')document.getElementById('ot').value='hiring';
+  if(type==='peer')document.getElementById('ot').value='peer';
+}
+
+function copyPrompt(){
+  var el=document.getElementById('resumePrompt');
+  if(!el){toast('Resume Help tab not found','err');return;}
+  navigator.clipboard.writeText(el.textContent).then(function(){
+    toast('Prompt copied! Open Claude.ai and paste it','ok');
+  });
+}
+
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────
+function buildAnalytics() {
+  var total = apps.length;
+  var netCount = oLog.length + actLog.filter(function(a){return a.type==='network';}).length;
+  var intCount = apps.filter(function(a){return a.status==='interview'||a.status==='offered';}).length;
+  var offCount = apps.filter(function(a){return a.status==='offered';}).length;
+  document.getElementById('an-total').textContent = total;
+  document.getElementById('an-net').textContent = netCount;
+  document.getElementById('an-int').textContent = intCount;
+  document.getElementById('an-offered').textContent = offCount;
+
+  // Pipeline bars
+  var pipeline = document.getElementById('pipeline');
+  if(!pipeline) return;
+  var stages = [
+    {label:'New',status:'new',color:'#7B6EF6'},
+    {label:'Applied',status:'applied',color:'#2DD4BF'},
+    {label:'Interview',status:'interview',color:'#FBBF24'},
+    {label:'Offered',status:'offered',color:'#34D399'},
+    {label:'Rejected',status:'rejected',color:'#F87171'}
+  ];
+  if(apps.length === 0) {
+    pipeline.innerHTML = '<div style="font-size:12px;color:#55556a;text-align:center;padding:20px">No applications yet. Apply to jobs to see your pipeline.</div>';
+  } else {
+    pipeline.innerHTML = stages.map(function(s) {
+      var cnt = apps.filter(function(a){return a.status===s.status;}).length;
+      var pct = total > 0 ? Math.round(cnt/total*100) : 0;
+      return '<div style="margin-bottom:10px">'
+        +'<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">'
+        +'<span style="color:#e8e8f4">'+s.label+'</span>'
+        +'<span style="color:'+s.color+';font-weight:600">'+cnt+'</span>'
+        +'</div>'
+        +'<div style="height:6px;background:#1e1e32;border-radius:3px">'
+        +'<div style="height:6px;border-radius:3px;background:'+s.color+';width:'+pct+'%;transition:width .4s"></div>'
+        +'</div></div>';
+    }).join('');
+  }
+
+  // Weekly heatmap
+  var days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  var today = new Date(); today.setHours(0,0,0,0);
+  var weekHtml = ''; var weekCount = 0;
+  for(var d=6; d>=0; d--) {
+    var day = new Date(today); day.setDate(today.getDate()-d);
+    var ds = day.toLocaleDateString();
+    var cnt = apps.filter(function(a){return a.date===ds;}).length;
+    weekCount += cnt;
+    var bg = cnt > 2 ? '#7B6EF6' : cnt > 0 ? 'rgba(123,110,246,0.35)' : '#1e1e32';
+    var col = cnt > 0 ? '#e8e8f4' : '#55556a';
+    weekHtml += '<div style="text-align:center">'
+      +'<div style="font-size:9px;color:#55556a;margin-bottom:3px">'+days[day.getDay()]+'</div>'
+      +'<div style="aspect-ratio:1;border-radius:4px;background:'+bg+';display:flex;align-items:center;justify-content:center;font-size:10px;color:'+col+'">'+cnt+'</div>'
+      +'</div>';
+  }
+  var wg = document.getElementById('weekGrid');
+  if(wg) wg.innerHTML = weekHtml;
+  var wt = document.getElementById('weekTotal');
+  if(wt) wt.textContent = weekCount + ' applications this week';
+
+  // Top companies
+  var cos = {};
+  apps.forEach(function(a){cos[a.company]=(cos[a.company]||0)+1;});
+  var topC = Object.entries(cos).sort(function(a,b){return b[1]-a[1];}).slice(0,7);
+  var cosEl = document.getElementById('topCos');
+  if(cosEl) {
+    if(!topC.length) {
+      cosEl.innerHTML = '<div style="font-size:12px;color:#55556a;text-align:center;padding:20px">No applications yet</div>';
+    } else {
+      var maxC = topC[0][1];
+      cosEl.innerHTML = topC.map(function(c) {
+        var pct = Math.round(c[1]/maxC*100);
+        return '<div style="margin-bottom:8px">'
+          +'<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">'
+          +'<span style="color:#e8e8f4">'+c[0]+'</span><span style="color:#7B6EF6">'+c[1]+'</span>'
+          +'</div>'
+          +'<div style="height:4px;background:#1e1e32;border-radius:2px">'
+          +'<div style="height:4px;border-radius:2px;background:#7B6EF6;width:'+pct+'%"></div>'
+          +'</div></div>';
+      }).join('');
+    }
+  }
+
+  // Activity log
+  var actEl = document.getElementById('activityLog');
+  if(!actEl) return;
+  var icons = {network:'&#x1F91D;',resume:'&#x1F4C4;',followup:'&#x1F504;',interview:'&#x1F389;',offer:'&#x1F3C6;',rejected:'&#x274C;'};
+  actEl.innerHTML = actLog.length ? actLog.slice(0,15).map(function(a) {
+    return '<div style="display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.07)">'
+      +'<div>'+(icons[a.type]||'&#x1F4DD;')+' <b style="color:#e8e8f4">'+a.co+'</b>'
+      +' <span style="color:#55556a">- '+a.type+'</span>'
+      +(a.note?'<div style="font-size:11px;color:#55556a;margin-top:2px">'+a.note+'</div>':'')
+      +'</div><span style="color:#55556a;font-size:11px;white-space:nowrap">'+a.date+'</span>'
+      +'</div>';
+  }).join('') : '<div style="font-size:12px;color:#55556a;text-align:center;padding:20px">No activity logged yet</div>';
+}
+
+function logAct() {
+  var co = document.getElementById('log-co').value.trim();
+  if(!co){toast('Enter a company name','err');return;}
+  var entry = {type:document.getElementById('log-type').value, co:co, note:document.getElementById('log-note').value, date:new Date().toLocaleDateString()};
+  actLog.unshift(entry);
+  localStorage.setItem('actLog', JSON.stringify(actLog));
+  document.getElementById('log-co').value='';
+  document.getElementById('log-note').value='';
+  var statusMap = {interview:'interview', offer:'offered', rejected:'rejected'};
+  if(statusMap[entry.type]) {
+    apps.forEach(function(a,i) {
+      if(a.company.toLowerCase().indexOf(co.toLowerCase())>-1) {
+        apps[i].status = statusMap[entry.type];
+      }
+    });
+    localStorage.setItem('apps', JSON.stringify(apps));
+    renderTracker();
+    document.getElementById('nb-apps').textContent = apps.length;
+  }
+  buildAnalytics();
+  toast('Activity logged','ok');
+}
+
+async function syncGmail() {
+  var statusEl = document.getElementById('gmailStatus');
+  statusEl.textContent = 'Checking Gmail...';
+  statusEl.style.color = '#FBBF24';
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        mcp_servers:[{type:'url',url:'https://gmailmcp.googleapis.com/mcp/v1',name:'gmail'}],
+        messages:[{role:'user',content:'Search my Gmail last 30 days for job application emails. Look for: thank you for applying, application received, interview invitation, unfortunately we, move forward with other candidates, pleased to offer. Extract company name and type (applied/interview/rejected/offered) for each. Return ONLY JSON array: [{"company":"X","type":"applied","date":"date"}]. Return [] if none found.'}]
+      })
+    });
+    var data = await res.json();
+    var text = (data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('').replace(/```json|```/g,'').trim();
+    var emails = JSON.parse(text);
+    var updated = 0;
+    emails.forEach(function(e) {
+      if(!e.company) return;
+      apps.forEach(function(a,i) {
+        if(a.company.toLowerCase().indexOf(e.company.toLowerCase())>-1) {
+          var sm = {applied:'applied',interview:'interview',rejected:'rejected',offered:'offered'};
+          if(sm[e.type] && a.status !== sm[e.type]){apps[i].status=sm[e.type];updated++;}
+        }
+      });
+      actLog.unshift({type:e.type||'applied',co:e.company,note:'Gmail sync',date:e.date||new Date().toLocaleDateString()});
+    });
+    localStorage.setItem('apps',JSON.stringify(apps));
+    localStorage.setItem('actLog',JSON.stringify(actLog));
+    renderTracker();buildAnalytics();
+    statusEl.textContent = 'Found '+emails.length+' emails · '+updated+' statuses updated';
+    statusEl.style.color = '#34D399';
+    toast('Gmail synced! '+updated+' statuses updated','ok');
+  } catch(e) {
+    statusEl.textContent = 'Gmail sync works inside Claude.ai with Gmail connected in Settings';
+    statusEl.style.color = '#55556a';
+  }
+}
+
+var tt;
+function toast(msg,type){var t=document.getElementById('toast');t.innerHTML=msg;t.className='toast show '+(type||'');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},3000);}
+</script>
+</body>
+</html>
