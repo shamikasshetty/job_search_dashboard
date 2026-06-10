@@ -5,7 +5,7 @@ Fetches from Apify, processes jobs, builds complete index.html
 Zero manual steps required.
 """
 import json, os, sys, base64
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
@@ -123,7 +123,7 @@ def process_jobs(raw):
     return jobs
 
 def build_html(jobs):
-    today = datetime.now(timezone.utc).strftime('%b %d %Y at %H:%M UTC')
+    today = (datetime.now(timezone.utc) - timedelta(hours=5)).strftime('%b %d %Y at %I:%M %p CST')
     js_jobs = json.dumps(jobs, separators=(',',':'), ensure_ascii=True)
     js_jobs = js_jobs.replace('</script>', '<\\/script>')
 
@@ -144,7 +144,7 @@ def main():
     raw  = fetch_jobs()
     jobs = process_jobs(raw)
 
-    today = datetime.now(timezone.utc).strftime('%b %d %Y at %H:%M UTC')
+    today = (datetime.now(timezone.utc) - timedelta(hours=5)).strftime('%b %d %Y at %I:%M %p CST')
     print(f"\nResults for {today}:")
     print(f"  Total jobs:     {len(jobs)}")
     print(f"  H4-EAD:         {sum(1 for j in jobs if j['h4'])}")
