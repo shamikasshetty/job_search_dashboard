@@ -131,7 +131,10 @@ textarea.fi{resize:vertical;min-height:80px}
   <button class="ntab" id="tab-analytics" onclick="go('analytics','tab-analytics')">&#x1F4CA; Analytics</button>
   <button class="ntab" id="tab-outreach" onclick="go('outreach','tab-outreach')">&#x2709; Outreach</button>
   <button class="ntab" id="tab-resume" onclick="go('resume','tab-resume')">&#x1F4C4; Resume Tailor</button>
-  <div class="nsync"><span class="dot"></span><span id="syncLbl">Loading...</span></div>
+  <div class="nsync" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+  <div style="display:flex;align-items:center;gap:5px"><span class="dot"></span><span id="syncLbl" style="font-size:11px;color:#55556a">Loading...</span></div>
+  <div style="font-size:10px;color:#55556a">&#x1F4C5; Jobs updated: <b id="lastUpdated" style="color:#34D399;font-size:11px;letter-spacing:0.02em">checking...</b></div>
+</div>
 </nav>
 <div id="panel-jobs" class="panel active">
   <div class="stats">
@@ -372,7 +375,8 @@ var MY=['sql','python','splunk','nist','grc','iam','soc','power bi','security+',
 var rtText='';
 
 window.onload=function(){
-  document.getElementById('syncLbl').textContent=JOBS.length+' jobs · Jun 10 2026 loaded · Jun 6 2026';
+  document.getElementById('lastUpdated').textContent='Jun 10 2026 at 16:37 UTC';
+  document.getElementById('syncLbl').textContent=JOBS.length+' jobs loaded';
   updateStats();
   render();
   renderTracker();
