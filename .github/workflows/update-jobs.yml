@@ -32,6 +32,8 @@ jobs:
           git config user.email "bot@jobdash.com"
           git add index.html jobs.json
           git diff --staged --quiet || git commit -m "Auto-update jobs — $(date +'%Y-%m-%d %H:%M CST')"
+          # Keep-alive empty commit prevents GitHub from disabling scheduled runs
+          git commit --allow-empty -m "keep-alive $(date +'%Y-%m-%d')"
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
